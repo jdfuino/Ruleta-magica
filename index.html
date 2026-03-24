@@ -670,6 +670,134 @@
     text-transform: uppercase;
   }
 
+  /* ─── DOCENAS MODAL ──────────────────────── */
+  .docenas-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .docenas-overlay.show { display: flex; }
+  .docenas-card {
+    background: var(--bg-panel);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 32px 36px;
+    text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    max-width: 380px;
+    width: 90%;
+  }
+  .docenas-card h3 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .docenas-card p {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .docenas-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .docenas-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(212,175,55,0.08);
+    border: 1px solid var(--border-gold);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-white);
+  }
+  .docenas-btn:hover {
+    background: rgba(212,175,55,0.18);
+    border-color: var(--gold);
+    transform: translateX(4px);
+  }
+  .doc-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-white);
+  }
+  .doc-range {
+    font-family: 'Noto Serif', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .docenas-cancel {
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .docenas-cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--text-white); }
+
+  /* Highlight overlay for category selections */
+  .num-cell.cat-highlight {
+    box-shadow: 0 0 10px rgba(212,175,55,0.5);
+    filter: brightness(1.25);
+    border-color: rgba(212,175,55,0.6) !important;
+    opacity: 0.65;
+  }
+  .num-cell.cat-highlight::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, #fff8d0 0%, #f0c830 30%, #c8960a 60%, #7a5a00 100%);
+    border: 2px solid #f0d060;
+    box-shadow:
+      0 2px 6px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,220,0.6),
+      0 0 8px rgba(212,175,55,0.8);
+    opacity: 0.82;
+    animation: chipDrop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .num-cell.cat-highlight::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,240,150,0.7);
+    z-index: 2;
+    opacity: 0.82;
+    animation: chipDrop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
   /* ═══════════════════════════════════════════
      RESPONSIVE MOBILE — ≤ 768px
   ═══════════════════════════════════════════ */
@@ -747,16 +875,17 @@
     /* Chips: scroll horizontal */
     .chips-row {
       overflow-x: auto;
+      overflow-y: visible;
       justify-content: flex-start;
-      padding-bottom: 6px;
+      padding: 8px 4px 12px;
       gap: 8px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
     .chips-row::-webkit-scrollbar { display: none; }
     .chip {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       font-size: 12px;
       flex-shrink: 0;
     }
@@ -1063,6 +1192,29 @@
 
 </div>
 
+<!-- Docenas modal -->
+<div class="docenas-overlay" id="docenasOverlay">
+  <div class="docenas-card">
+    <h3>Selecciona una Docena</h3>
+    <p>¿Qué grupo de números quieres apostar?</p>
+    <div class="docenas-options">
+      <button class="docenas-btn" onclick="selectDocena(1)">
+        <span class="doc-label">1ª Docena</span>
+        <span class="doc-range">1 — 12</span>
+      </button>
+      <button class="docenas-btn" onclick="selectDocena(2)">
+        <span class="doc-label">2ª Docena</span>
+        <span class="doc-range">13 — 24</span>
+      </button>
+      <button class="docenas-btn" onclick="selectDocena(3)">
+        <span class="doc-label">3ª Docena</span>
+        <span class="doc-range">25 — 36</span>
+      </button>
+    </div>
+    <button class="docenas-cancel" onclick="closeDocenas()">Cancelar</button>
+  </div>
+</div>
+
 <!-- Result overlay -->
 <div class="result-overlay" id="resultOverlay">
   <div class="result-card">
@@ -1135,8 +1287,82 @@
     document.querySelectorAll('.bet-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
     currentBetType = type;
-    selectedNumber = null;
-    document.querySelectorAll('.num-cell').forEach(c => c.classList.remove('selected'));
+
+    // Clear number selection only when switching away from pleno
+    if (type !== 'pleno') {
+      selectedNumber = null;
+      document.querySelectorAll('.num-cell').forEach(c => c.classList.remove('selected'));
+    }
+
+    // Highlight relevant cells
+    clearCatHighlight();
+
+    if (type === 'rojo') {
+      highlightCells(n => RED_NUMBERS.includes(parseInt(n)));
+      addCategoryBet('rojo', 'Rojo', 'R', 'rojo');
+    } else if (type === 'negro') {
+      highlightCells(n => BLACK_NUMBERS.includes(parseInt(n)));
+      addCategoryBet('negro', 'Negro', 'N', 'negro');
+    } else if (type === 'verde') {
+      highlightCells(n => n === '0' || n === '00');
+      addCategoryBet('verde', 'Verde', 'V', 'verde');
+    } else if (type === 'par') {
+      highlightCells(n => parseInt(n) > 0 && parseInt(n) % 2 === 0);
+      addCategoryBet('par', 'Par', 'P', 'negro');
+    } else if (type === 'impar') {
+      highlightCells(n => parseInt(n) > 0 && parseInt(n) % 2 !== 0);
+      addCategoryBet('impar', 'Impar', 'I', 'negro');
+    } else if (type === 'docenas') {
+      // Show docenas modal
+      document.getElementById('docenasOverlay').classList.add('show');
+    }
+    // pleno: just switch mode, no auto-bet
+  }
+
+  function highlightCells(filterFn) {
+    document.querySelectorAll('.num-cell').forEach(c => {
+      if (filterFn(c.dataset.num)) c.classList.add('cat-highlight');
+    });
+  }
+
+  function clearCatHighlight() {
+    document.querySelectorAll('.num-cell').forEach(c => c.classList.remove('cat-highlight'));
+  }
+
+  function addCategoryBet(type, display, label, badgeClass) {
+    const amount = parseFloat(document.getElementById('betAmount').value) || currentChip;
+    // Prevent duplicate same-type bet
+    const exists = bets.find(b => b.type === type);
+    if (exists) return;
+    bets.push({ id: betIdCounter++, type, num: null, amount, label, badgeClass, display });
+    renderBets();
+  }
+
+  function selectDocena(num) {
+    closeDocenas();
+    const ranges = { 1: '1ª Docena', 2: '2ª Docena', 3: '3ª Docena' };
+    const type = `docena${num}`;
+    const display = ranges[num];
+    const amount = parseFloat(document.getElementById('betAmount').value) || currentChip;
+    // Prevent duplicate
+    if (bets.find(b => b.type === type)) return;
+    bets.push({ id: betIdCounter++, type, num, amount, label: `D${num}`, badgeClass: 'negro', display });
+    // Highlight cells for that dozen
+    clearCatHighlight();
+    const ranges_num = { 1: [1,12], 2: [13,24], 3: [25,36] };
+    const [min, max] = ranges_num[num];
+    highlightCells(n => parseInt(n) >= min && parseInt(n) <= max);
+    renderBets();
+  }
+
+  function closeDocenas() {
+    document.getElementById('docenasOverlay').classList.remove('show');
+    // Revert bet-btn active to pleno if cancelled
+    const activeBtn = document.querySelector('.bet-btn.active');
+    if (!activeBtn) {
+      document.getElementById('bet-pleno').classList.add('active');
+      currentBetType = 'pleno';
+    }
   }
 
   // ─── NUMBER SELECT ──────────────────────────────────────────
@@ -1196,13 +1422,31 @@
   // ─── REMOVE BET ─────────────────────────────────────────────
   function removeBet(id) {
     const bet = bets.find(b => b.id === id);
-    if (bet && bet.type === 'pleno' && bet.num !== null) {
-      // Deselect the number cell on the board
-      const cell = document.querySelector(`.num-cell[data-num="${bet.num}"]`);
-      if (cell) cell.classList.remove('selected');
+    if (bet) {
+      if (bet.type === 'pleno' && bet.num !== null) {
+        const cell = document.querySelector(`.num-cell[data-num="${bet.num}"]`);
+        if (cell) cell.classList.remove('selected');
+      } else {
+        // Re-evaluate highlights after removal
+        setTimeout(() => refreshHighlights(), 0);
+      }
     }
     bets = bets.filter(b => b.id !== id);
     renderBets();
+  }
+
+  function refreshHighlights() {
+    clearCatHighlight();
+    bets.forEach(bet => {
+      if (bet.type === 'rojo') highlightCells(n => RED_NUMBERS.includes(parseInt(n)));
+      else if (bet.type === 'negro') highlightCells(n => BLACK_NUMBERS.includes(parseInt(n)));
+      else if (bet.type === 'verde') highlightCells(n => n === '0' || n === '00');
+      else if (bet.type === 'par') highlightCells(n => parseInt(n) > 0 && parseInt(n) % 2 === 0);
+      else if (bet.type === 'impar') highlightCells(n => parseInt(n) > 0 && parseInt(n) % 2 !== 0);
+      else if (bet.type === 'docena1') highlightCells(n => parseInt(n) >= 1 && parseInt(n) <= 12);
+      else if (bet.type === 'docena2') highlightCells(n => parseInt(n) >= 13 && parseInt(n) <= 24);
+      else if (bet.type === 'docena3') highlightCells(n => parseInt(n) >= 25 && parseInt(n) <= 36);
+    });
   }
 
   // ─── RENDER BETS ────────────────────────────────────────────
@@ -1231,7 +1475,7 @@
       if (bet.type === 'pleno') payout += bet.amount * 35;
       else if (['rojo','negro','par','impar'].includes(bet.type)) payout += bet.amount * 2;
       else if (bet.type === 'verde') payout += bet.amount * 17;
-      else if (bet.type === 'docenas') payout += bet.amount * 3;
+      else if (['docena1','docena2','docena3'].includes(bet.type)) payout += bet.amount * 3;
     });
 
     document.getElementById('totalApostado').textContent = `Bs.${total.toFixed(2)}`;
@@ -1288,9 +1532,9 @@
       else if (bet.type === 'verde' && colorClass === 'verde') winnings += bet.amount * 18;
       else if (bet.type === 'par' && numInt > 0 && numInt % 2 === 0) winnings += bet.amount * 2;
       else if (bet.type === 'impar' && numInt > 0 && numInt % 2 !== 0) winnings += bet.amount * 2;
-      else if (bet.type === 'docenas') {
-        if ((numInt >= 1 && numInt <= 12) || (numInt >= 13 && numInt <= 24) || (numInt >= 25 && numInt <= 36)) winnings += bet.amount * 3;
-      }
+      else if (bet.type === 'docena1' && numInt >= 1 && numInt <= 12) winnings += bet.amount * 3;
+      else if (bet.type === 'docena2' && numInt >= 13 && numInt <= 24) winnings += bet.amount * 3;
+      else if (bet.type === 'docena3' && numInt >= 25 && numInt <= 36) winnings += bet.amount * 3;
     });
 
     balance = balance - totalBet + winnings;
@@ -1302,12 +1546,14 @@
     document.getElementById('lastResultDisplay').textContent = resultPadded;
     const mobLast = document.getElementById('mobileLastResult');
     if (mobLast) { mobLast.textContent = resultPadded; mobLast.style.background = colorClass === 'rojo' ? 'var(--red)' : colorClass === 'verde' ? 'var(--green-zero)' : '#222'; }
-    document.getElementById('lastResultDisplay').parentElement.style.background = colorClass === 'rojo' ? 'var(--red)' : colorClass === 'verde' ? 'var(--green-zero)' : '#222';
+        document.getElementById('lastResultDisplay').style.background = colorClass === 'rojo' ? 'var(--red)' : colorClass === 'verde' ? 'var(--green-zero)' : '#1e1e1e';
+    document.getElementById('lastResultDisplay').style.boxShadow = colorClass === 'rojo' ? '0 0 12px rgba(155,28,28,0.6)' : colorClass === 'verde' ? '0 0 12px rgba(20,83,45,0.6)' : '0 0 8px rgba(0,0,0,0.4)';
 
     // Show result
     showResult(result, color, colorClass, winnings, totalBet);
-    // Clear all chip selections from board
+    // Clear all chip selections and highlights from board
     document.querySelectorAll('.num-cell.selected').forEach(c => c.classList.remove('selected'));
+    clearCatHighlight();
     bets = [];
     betIdCounter = 0;
   }
