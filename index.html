@@ -1297,6 +1297,27 @@
     // Highlight relevant cells
     clearCatHighlight();
 
+    if (type === 'pleno') return; // pleno: just switch mode
+
+    if (type === 'docenas') {
+      document.getElementById('docenasOverlay').classList.add('show');
+      return;
+    }
+
+    // Toggle: if already bet, remove it
+    const existingIdx = bets.findIndex(b => b.type === type);
+    if (existingIdx !== -1) {
+      bets.splice(existingIdx, 1);
+      // Remove active style
+      document.querySelectorAll('.bet-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('bet-pleno').classList.add('active');
+      currentBetType = 'pleno';
+      refreshHighlights();
+      renderBets();
+      return;
+    }
+
+    // Add bet + highlight
     if (type === 'rojo') {
       highlightCells(n => RED_NUMBERS.includes(parseInt(n)));
       addCategoryBet('rojo', 'Rojo', 'R', 'rojo');
@@ -1312,11 +1333,7 @@
     } else if (type === 'impar') {
       highlightCells(n => parseInt(n) > 0 && parseInt(n) % 2 !== 0);
       addCategoryBet('impar', 'Impar', 'I', 'negro');
-    } else if (type === 'docenas') {
-      // Show docenas modal
-      document.getElementById('docenasOverlay').classList.add('show');
     }
-    // pleno: just switch mode, no auto-bet
   }
 
   function highlightCells(filterFn) {
@@ -1331,9 +1348,7 @@
 
   function addCategoryBet(type, display, label, badgeClass) {
     const amount = parseFloat(document.getElementById('betAmount').value) || currentChip;
-    // Prevent duplicate same-type bet
-    const exists = bets.find(b => b.type === type);
-    if (exists) return;
+    // Duplicate prevention handled by toggle in selectBetType
     bets.push({ id: betIdCounter++, type, num: null, amount, label, badgeClass, display });
     renderBets();
   }
@@ -1342,13 +1357,19 @@
     closeDocenas();
     const ranges = { 1: '1ª Docena', 2: '2ª Docena', 3: '3ª Docena' };
     const type = `docena${num}`;
+
+    // Toggle: if already in ticket, remove it
+    const existingIdx = bets.findIndex(b => b.type === type);
+    if (existingIdx !== -1) {
+      bets.splice(existingIdx, 1);
+      refreshHighlights();
+      renderBets();
+      return;
+    }
+
     const display = ranges[num];
     const amount = parseFloat(document.getElementById('betAmount').value) || currentChip;
-    // Prevent duplicate
-    if (bets.find(b => b.type === type)) return;
     bets.push({ id: betIdCounter++, type, num, amount, label: `D${num}`, badgeClass: 'negro', display });
-    // Highlight cells for that dozen
-    clearCatHighlight();
     const ranges_num = { 1: [1,12], 2: [13,24], 3: [25,36] };
     const [min, max] = ranges_num[num];
     highlightCells(n => parseInt(n) >= min && parseInt(n) <= max);
