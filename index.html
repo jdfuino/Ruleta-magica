@@ -414,6 +414,31 @@
   }
   .bet-btn.skip { visibility: hidden; }
 
+  /* Color-specific bet buttons */
+  #bet-rojo {
+    background: rgba(155,28,28,0.45);
+    border-color: rgba(155,28,28,0.5);
+    color: #ffaaaa;
+  }
+  #bet-rojo:hover { background: rgba(185,28,28,0.6); border-color: rgba(185,28,28,0.7); }
+  #bet-rojo.active { background: rgba(185,28,28,0.6); border: 2px solid var(--gold); color: var(--gold); }
+
+  #bet-negro {
+    background: rgba(20,20,20,0.5);
+    border-color: rgba(255,255,255,0.12);
+    color: #ccc;
+  }
+  #bet-negro:hover { background: rgba(40,40,40,0.65); border-color: rgba(255,255,255,0.25); }
+  #bet-negro.active { background: rgba(40,40,40,0.65); border: 2px solid var(--gold); color: var(--gold); }
+
+  #bet-verde {
+    background: rgba(20,83,45,0.45);
+    border-color: rgba(22,163,74,0.35);
+    color: #86efac;
+  }
+  #bet-verde:hover { background: rgba(22,101,52,0.65); border-color: rgba(22,163,74,0.6); }
+  #bet-verde.active { background: rgba(22,101,52,0.65); border: 2px solid var(--gold); color: var(--gold); }
+
   /* Chips row */
   .chips-row {
     display: flex;
@@ -1185,7 +1210,7 @@
     <div class="amount-section">
       <div class="amount-label">Monto a apostar</div>
       <div class="amount-input-wrapper">
-        <input type="number" class="amount-input" id="betAmount" value="250.00" min="20" step="10">
+        <input type="number" class="amount-input" id="betAmount" value="250.00" min="20" step="10" oninput="onAmountChange(this.value)">
         <span class="amount-unit">Bs.</span>
       </div>
     </div>
@@ -1504,7 +1529,9 @@
 
     document.getElementById('totalApostado').textContent = `Bs.${total.toFixed(2)}`;
     document.getElementById('pagoPotencial').textContent = `Bs. ${payout.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
-    document.getElementById('betAmount').value = total > 0 ? total.toFixed(2) : currentChip.toFixed(2);
+    // Only update input if it reflects total (don't overwrite user's custom amount)
+    const inputEl = document.getElementById('betAmount');
+    if (bets.length === 0) inputEl.value = currentChip.toFixed(2);
 
     // sync chip
     const chips = document.querySelectorAll('.chip');
@@ -1639,6 +1666,25 @@
     document.getElementById('btnJugar').disabled = false;
     timerSeconds = 60;
     updateTimerDisplay();
+    renderBets();
+  }
+
+  // ─── AMOUNT CHANGE ─────────────────────────────────────────
+  function onAmountChange(val) {
+    const total = parseFloat(val);
+    if (isNaN(total) || total <= 0 || bets.length === 0) return;
+
+    const base = Math.floor((total / bets.length) * 100) / 100;
+    let assigned = 0;
+    bets.forEach((b, i) => {
+      if (i < bets.length - 1) {
+        b.amount = base;
+        assigned += base;
+      } else {
+        // Last bet gets the remainder to make exact total
+        b.amount = parseFloat((total - assigned).toFixed(2));
+      }
+    });
     renderBets();
   }
 
