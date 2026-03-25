@@ -1489,7 +1489,7 @@
     // Payout estimate
     let payout = 0;
     bets.forEach(bet => {
-      if (bet.type === 'pleno') payout += bet.amount * 35;
+      if (bet.type === 'pleno') payout += bet.amount * 36;
       else if (['rojo','negro','par','impar'].includes(bet.type)) payout += bet.amount * 2;
       else if (bet.type === 'verde') payout += bet.amount * 17;
       else if (['docena1','docena2','docena3'].includes(bet.type)) payout += bet.amount * 3;
