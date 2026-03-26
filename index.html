@@ -2304,17 +2304,26 @@ function triggerSpin() {
   }
 
   function enterGame() {
+    // ── iOS fix: resume AudioContext SYNCHRONOUSLY inside the tap event ──
+    try {
+      const ctx = getAudioCtx();
+      // Must be called immediately — no setTimeout, no await before this
+      if (ctx.state === 'suspended') ctx.resume();
+      // Create and immediately suspend a silent buffer to fully unlock iOS
+      const silentBuf = ctx.createBuffer(1, 1, 22050);
+      const silentSrc = ctx.createBufferSource();
+      silentSrc.buffer = silentBuf;
+      silentSrc.connect(ctx.destination);
+      silentSrc.start(0);
+    } catch(e) {}
+
     const btn = document.getElementById('splashBtn');
     const loading = document.getElementById('splashLoading');
     btn.style.display = 'none';
     loading.classList.add('show');
 
-    // Unlock AudioContext on user gesture
-    try {
-      const ctx = getAudioCtx();
-      if (ctx.state === 'suspended') ctx.resume();
-      preloadAudio();
-    } catch(e) {}
+    // Preload audio AFTER unlocking
+    preloadAudio();
 
     // Short loading delay then fade out
     setTimeout(() => {
