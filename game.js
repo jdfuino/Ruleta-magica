@@ -47,6 +47,7 @@
   let timerSeconds = 60;
   let timerInterval = null;
   let spinning = false;
+  let historyData = [];  // Persiste hasta 100 sorteos de la sesión
 
   // ─── TIMER ──────────────────────────────────────────────────
   function startTimer() {
@@ -758,6 +759,9 @@ function triggerSpin() {
     const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
     const colorLabel = getColorLabel(colorClass);
 
+    historyData.push({ num: padded, colorClass, time, colorLabel });
+    if (historyData.length > 100) historyData.shift();
+
     const item = document.createElement('div');
     item.className = `history-item ${colorClass}`;
     item.innerHTML = `
@@ -769,6 +773,31 @@ function triggerSpin() {
     list.insertBefore(item, list.firstChild);
     // Keep max 10
     while (list.children.length > 10) list.removeChild(list.lastChild);
+  }
+
+  function openHistoryModal() {
+    const body = document.getElementById('historyModalBody');
+    body.innerHTML = '';
+    if (historyData.length === 0) {
+      body.innerHTML = '<p class="history-modal-empty">No hay resultados aún</p>';
+    } else {
+      historyData.slice().reverse().forEach(entry => {
+        const item = document.createElement('div');
+        item.className = `history-item ${entry.colorClass}`;
+        item.innerHTML = `
+          <div class="h-number ${entry.colorClass}">${entry.num}</div>
+          <div class="h-info">
+            <div class="h-time">${entry.time}</div>
+            <div class="h-color ${entry.colorClass}">${entry.colorLabel}</div>
+          </div>`;
+        body.appendChild(item);
+      });
+    }
+    document.getElementById('historyModal').classList.add('show');
+  }
+
+  function closeHistoryModal() {
+    document.getElementById('historyModal').classList.remove('show');
   }
 
   function showResult(num, colorName, colorClass, winnings, totalBet) {
@@ -975,3 +1004,8 @@ function triggerSpin() {
 
   // Init
   renderBets();
+
+  document.getElementById('btnResultados').addEventListener('click', openHistoryModal);
+  document.getElementById('historyModal').addEventListener('click', function(e) {
+    if (e.target === this) closeHistoryModal();
+  });

@@ -112,7 +112,7 @@
         </div>
       </div>
     </div>
-    <button class="btn-resultados">Resultados</button>
+    <button class="btn-resultados" id="btnResultados">Resultados</button>
   </div>
 
   <!-- CENTER PANEL -->
@@ -289,6 +289,17 @@
       </button>
     </div>
     <button class="docenas-cancel" onclick="closeDocenas()">Cancelar</button>
+  </div>
+</div>
+
+<!-- History modal -->
+<div class="history-modal-overlay" id="historyModal">
+  <div class="history-modal-card">
+    <div class="history-modal-header">
+      <h3 class="history-modal-title">Todos los resultados</h3>
+      <button class="history-modal-close" onclick="closeHistoryModal()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="history-modal-body history-list" id="historyModalBody"></div>
   </div>
 </div>
 
